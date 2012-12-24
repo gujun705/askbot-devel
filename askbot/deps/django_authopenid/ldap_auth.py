@@ -93,10 +93,6 @@ def ldap_authenticate_default(username, password):
                 master_password.encode(encoding)
             )
             
-        domain = getattr(django_settings, 'LDAP_DOMAIN', None)
-        domain_regx = domain+"\\"
-        if username.startswith(domain_regx):
-            username = username.lstrip(domain_regx)
 
         user_filter = askbot_settings.LDAP_USER_FILTER_TEMPLATE % (
                         askbot_settings.LDAP_LOGIN_NAME_FIELD,

@@ -370,8 +370,14 @@ def signin(request, template_name='authopenid/signin.html'):
                 password_action = login_form.cleaned_data['password_action']
                 if askbot_settings.USE_LDAP_FOR_PASSWORD_LOGIN:
                     assert(password_action == 'login')
+                    
                     username = login_form.cleaned_data['username']
                     password = login_form.cleaned_data['password']
+
+                    domain = getattr(django_settings, 'LDAP_DOMAIN', None)
+                    domain_regx = domain+"\\"
+                    if username.startswith(domain_regx):
+                        username = username.lstrip(domain_regx)
 
                     user = authenticate(
                                     username=username,
