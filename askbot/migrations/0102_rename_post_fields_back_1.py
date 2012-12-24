@@ -11,16 +11,7 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         #db.rename_column('askbot_questionview', 'question_post_id', 'question_id')
-        innodb_ready_rename_column(
-            orm=orm,
-            models=self.__class__.models,
-            table='askbot_questionview',
-            old_column_name='question_post_id',
-            new_column_name='question_id',
-            app_model='askbot.questionview',
-            new_field_name='question'
-        )
-
+        pass
 
 
     def backwards(self, orm):
