@@ -1,6 +1,7 @@
 import datetime
 import operator
 import re
+import logging
 
 from django.conf import settings as django_settings
 from django.db import models
@@ -22,6 +23,7 @@ from askbot.models.tag import Tag
 from askbot.models.tag import get_tags_by_names
 from askbot.models.tag import filter_accepted_tags, filter_suggested_tags
 from askbot.models.tag import delete_tags, separate_unused_tags
+from askbot.models.category import Category
 from askbot.models.base import DraftContent, BaseQuerySetManager
 from askbot.models.post import Post, PostRevision
 from askbot.models.post import PostToGroup
@@ -107,6 +109,7 @@ class ThreadManager(BaseQuerySetManager):
                 added_at,
                 wiki,
                 text,
+                category = None,
                 tagnames = None,
                 is_anonymous = False,
                 is_private = False,
@@ -116,13 +119,14 @@ class ThreadManager(BaseQuerySetManager):
             ):
         """creates new thread"""
         # TODO: Some of this code will go to Post.objects.create_new
-
+        category_instance = Category.objects.get(name = category)
         thread = super(
             ThreadManager,
             self
         ).create(
             title=title,
             tagnames=tagnames,
+            category_id=category_instance.id,
             last_activity_at=added_at,
             last_activity_by=author
         )
@@ -155,6 +159,7 @@ class ThreadManager(BaseQuerySetManager):
         revision = question.add_revision(
             author=author,
             is_anonymous=is_anonymous,
+            category = category,
             text=text,
             comment=const.POST_STATUS['default_version'],
             revised_at=added_at,
@@ -324,6 +329,9 @@ class ThreadManager(BaseQuerySetManager):
                 followed_users = request_user.get_followed_users()
                 favorite_filter |= models.Q(posts__post_type__in=('question', 'answer'), posts__author__in=followed_users)
             qs = qs.filter(favorite_filter)
+            
+        if search_state.category != 'all':
+            qs = qs.filter(category=Category.objects.filter(name=search_state.category))
 
         #user contributed questions & answers
         if search_state.author:
@@ -511,7 +519,7 @@ class Thread(models.Model):
     ANSWER_LIST_KEY_TPL = 'thread-answer-list-%d'
 
     title = models.CharField(max_length=300)
-
+    category = models.ForeignKey(Category)
     tags = models.ManyToManyField('Tag', related_name='threads')
     groups = models.ManyToManyField(Group, through=ThreadToGroup, related_name='group_threads')
 
@@ -718,6 +726,23 @@ class Thread(models.Model):
             return u'%s %s' % (self.title, attr)
         else:
             return self.title
+        
+    def get_category(self, question = None):
+        if not question:
+            question = self._question_post() # allow for optimization if the caller has already fetched the question post for this thread
+        if self.is_private():
+            attr = const.POST_STATUS['private']
+        elif self.closed:
+            attr = const.POST_STATUS['closed']
+        elif question.deleted:
+            attr = const.POST_STATUS['deleted']
+
+        else:
+            attr = None
+        if attr is not None:
+            return self.category.name
+        else:
+            return self.category.name        
 
     def format_for_email(self, user=None):
         """experimental function: output entire thread for email"""
@@ -1422,6 +1447,7 @@ class DraftQuestion(models.Model):
     title = models.CharField(max_length=300, null=True)
     text = models.TextField(null=True)
     tagnames = models.CharField(max_length=125, null=True)
+    category = models.ForeignKey(Category)
 
     class Meta:
         app_label = 'askbot'

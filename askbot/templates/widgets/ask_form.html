@@ -20,6 +20,19 @@
         <div class="title-desc">
             {{ form.title.help_text }}
         </div>
+        <fieldset>
+
+		<p>
+             <label class=><b>{{ form.category.label }}</b></label>
+             <select id = "category" name="category">
+              <option value = "No selection" selected>---Choose a category---</option>
+             {% for choice in form.category.field.choices %}
+               <option value = "{{ choice }}" >{{ choice }}</option>
+			 {% endfor %}
+             </select>
+             <span class="form-error">{{ form.category.errors }}</span>
+    	<p>
+        </fieldset>
     </div>
     {{
         macros.edit_post(

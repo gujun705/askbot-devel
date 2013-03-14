@@ -36,6 +36,7 @@ from askbot import conf
 from askbot import models
 from askbot import schedules
 from askbot.models.tag import Tag
+from askbot.models.category import Category
 from askbot import const
 from askbot.utils import functions
 from askbot.utils.html import sanitize_html
@@ -48,7 +49,6 @@ from askbot.views import context
 # used in index page
 #todo: - take these out of const or settings
 from askbot.models import Post, Vote
-
 INDEX_PAGE_SIZE = 30
 INDEX_AWARD_SIZE = 15
 INDEX_TAGS_SIZE = 25
@@ -76,7 +76,7 @@ def questions(request, **kwargs):
     #before = datetime.datetime.now()
     if request.method != 'GET':
         return HttpResponseNotAllowed(['GET'])
-
+    
     search_state = SearchState(
                     user_logged_in=request.user.is_authenticated(),
                     **kwargs
@@ -88,7 +88,6 @@ def questions(request, **kwargs):
                     )
     if meta_data['non_existing_tags']:
         search_state = search_state.remove_tags(meta_data['non_existing_tags'])
-
     paginator = Paginator(qs, page_size)
     if paginator.num_pages < search_state.page:
         search_state.page = 1
@@ -112,6 +111,10 @@ def questions(request, **kwargs):
                                         thread_list=page.object_list
                                     ).only('id', 'username', 'gravatar')
                         )
+
+    categories = []
+    for item in Category.objects.all():
+        categories.append(item.name)
 
     paginator_context = {
         'is_paginated' : (paginator.count > page_size),
@@ -182,6 +185,7 @@ def questions(request, **kwargs):
             'query_data': {
                 'tags': search_state.tags,
                 'sort_order': search_state.sort,
+                'category': search_state.category,
                 'ask_query_string': search_state.ask_query_string(),
             },
             'paginator': paginator_html,
@@ -201,7 +205,8 @@ def questions(request, **kwargs):
         return HttpResponse(simplejson.dumps(ajax_data), mimetype = 'application/json')
 
     else: # non-AJAX branch
-
+        
+        
         template_data = {
             'active_tab': 'questions',
             'author_name' : meta_data.get('author_name',None),
@@ -217,6 +222,7 @@ def questions(request, **kwargs):
             'page_size': page_size,
             'query': search_state.query,
             'threads' : page,
+            'categories': categories,
             'questions_count' : paginator.count,
             'reset_method_count': reset_method_count,
             'scope': search_state.scope,

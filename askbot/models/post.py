@@ -31,6 +31,7 @@ from askbot.models.user import Group
 from askbot.models.user import GroupMembership
 from askbot.models.tag import Tag, MarkedTag
 from askbot.models.tag import tags_match_some_wildcard
+from askbot.models.category import Category
 from askbot.conf import settings as askbot_settings
 from askbot import exceptions
 from askbot.utils import markup
@@ -1699,7 +1700,7 @@ class Post(models.Model):
         self.thread.set_last_activity(last_activity_at=edited_at, last_activity_by=edited_by)
 
     def _question__apply_edit(self, edited_at=None, edited_by=None, title=None,\
-                              text=None, comment=None, tags=None, wiki=False,\
+                              text=None, comment=None, tags=None, category= None, wiki=False,\
                               edit_anonymously = False, is_private = False,
                               by_email = False
                             ):
@@ -1724,6 +1725,7 @@ class Post(models.Model):
 
         self.thread.title = title
         self.thread.tagnames = tags
+        self.thread.category = Category.objects.get(name=category)
         self.thread.save()
 
         ##it is important to do this before __apply_edit b/c of signals!!!
@@ -1738,6 +1740,7 @@ class Post(models.Model):
             edited_at=edited_at,
             edited_by=edited_by,
             text=text,
+            category=category,
             comment=comment,
             wiki=wiki,
             edit_anonymously=edit_anonymously,
@@ -1782,6 +1785,7 @@ class Post(models.Model):
             author = author,
             revised_at = revised_at,
             text = text,
+            category = self.thread.category,
             summary = comment,
             revision = rev_no,
             by_email = by_email
@@ -1792,6 +1796,7 @@ class Post(models.Model):
             author = None,
             is_anonymous = False,
             text = None,
+            category=None,
             comment = None,
             revised_at = None,
             by_email = False,
@@ -1805,6 +1810,11 @@ class Post(models.Model):
                 comment = const.POST_STATUS['default_version']
             else:
                 comment = 'No.%s Revision' % rev_no
+        
+        if category:
+            category_instance = Category.objects.get(name = category)
+        else:
+            category_instance = self.thread.category
 
         return PostRevision.objects.create(
             post = self,
@@ -1814,6 +1824,7 @@ class Post(models.Model):
             is_anonymous = is_anonymous,
             revised_at = revised_at,
             tagnames   = self.thread.tagnames,
+            category_id= category_instance.id,
             summary    = comment,
             text       = text,
             by_email = by_email,
@@ -1999,6 +2010,7 @@ class PostRevision(models.Model):
     # Question-specific fields
     title = models.CharField(max_length=300, blank=True, default='')
     tagnames = models.CharField(max_length=125, blank=True, default='')
+    category = models.ForeignKey(Category)
     is_anonymous = models.BooleanField(default=False)
 
     objects = PostRevisionManager()

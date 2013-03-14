@@ -2,6 +2,7 @@
 {% if threads.object_list|length == 0 %}
     {% include "main_page/nothing_found.html" %}
 {% else %}
+
     {% for thread in threads.object_list %}
         {{ thread.get_summary_html(search_state=search_state, visitor = request.user) }}
     {% endfor %}

@@ -17,20 +17,21 @@ class Migration(DataMigration):
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
-        if db.backend_name == 'mysql':
-            table_name = orm['askbot.Thread']._meta.db_table
-            if mysql_table_supports_full_text_search(table_name):
-                columns = ('title', 'tagnames')
-                sql = get_create_full_text_index_sql(INDEX_NAME, table_name, columns)
-                db.execute(sql)
-        elif db.backend_name == 'postgres':
-            script_path = os.path.join(
-                                askbot.get_install_directory(),
-                                'search',
-                                'postgresql',
-                                'thread_and_post_models_27112012.plsql'
-                            )
-            postgresql.setup_full_text_search(script_path)
+#        if db.backend_name == 'mysql':
+#            table_name = orm['askbot.Thread']._meta.db_table
+#            if mysql_table_supports_full_text_search(table_name):
+#                columns = ('title', 'tagnames')
+#                sql = get_create_full_text_index_sql(INDEX_NAME, table_name, columns)
+#                db.execute(sql)
+#        elif db.backend_name == 'postgres':
+#            script_path = os.path.join(
+#                                askbot.get_install_directory(),
+#                                'search',
+#                                'postgresql',
+#                                'thread_and_post_models_27112012.plsql'
+#                            )
+#            postgresql.setup_full_text_search(script_path)
+        pass
 
     def backwards(self, orm):
         "Write your backwards methods here."

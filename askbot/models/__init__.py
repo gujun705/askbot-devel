@@ -44,6 +44,7 @@ from askbot.models.question import DraftQuestion
 from askbot.models.question import FavoriteQuestion
 from askbot.models.tag import Tag, MarkedTag
 from askbot.models.tag import format_personal_group_name
+from askbot.models.category import Category
 from askbot.models.user import EmailFeedSetting, ActivityAuditStatus, Activity
 from askbot.models.user import GroupMembership
 from askbot.models.user import Group
@@ -1610,6 +1611,7 @@ def user_post_question(
                     title = None,
                     body_text = '',
                     tags = None,
+                    category = None,
                     wiki = False,
                     is_anonymous = False,
                     is_private = False,
@@ -1630,9 +1632,12 @@ def user_post_question(
         raise ValueError('Title is required to post question')
     if tags is None:
         raise ValueError('Tags are required to post question')
+    if category is None:
+        raise ValueError('Category is required to post question')
     if timestamp is None:
         timestamp = datetime.datetime.now()
-
+    
+    logging.info("category: %s" % category)
     #todo: split this into "create thread" + "add queston", if text exists
     #or maybe just add a blank question post anyway
     thread = Thread.objects.create_new(
@@ -1640,6 +1645,7 @@ def user_post_question(
                                     title = title,
                                     text = body_text,
                                     tagnames = tags,
+                                    category = category,
                                     added_at = timestamp,
                                     wiki = wiki,
                                     is_anonymous = is_anonymous,
@@ -1734,6 +1740,7 @@ def user_edit_question(
                 body_text = None,
                 revision_comment = None,
                 tags = None,
+                category = None,
                 wiki = False,
                 edit_anonymously = False,
                 is_private = False,
@@ -1743,7 +1750,6 @@ def user_edit_question(
             ):
     if force == False:
         self.assert_can_edit_question(question)
-
     question.apply_edit(
         edited_at = timestamp,
         edited_by = self,
@@ -1752,6 +1758,7 @@ def user_edit_question(
         #todo: summary name clash in question and question revision
         comment = revision_comment,
         tags = tags,
+        category = category,
         wiki = wiki,
         edit_anonymously = edit_anonymously,
         is_private = is_private,

@@ -991,6 +991,80 @@ body.anon {
 .rss:hover {
     color: #F4A731 !important;
 }
+/* ----- Category ----- */
+
+.catBar {
+    background-color: #eff5f6;
+    height: 30px;
+    margin-bottom: 3px;
+    margin-top: 3px;
+    float:left;
+    font-family:@sort-font;
+    font-size:16px;
+    .rounded-corners(5px);
+}
+
+.catBar h2 {
+    float: left;
+}
+
+.catsA, .catsC {
+    float: left;
+    position: relative;
+    display: block;
+    height: 20px;
+}
+
+/* catsA - used for sorting */
+.catsA { float: left; }
+.catsC { float: left; }
+
+.catsA a, .catsC a{
+
+    border-left: 1px solid #d0e1e4;
+    color: @section-title;
+    display: block;
+    float: left;
+    height: 20px;
+    line-height: 20px;
+    padding:4px 7px 4px 7px;
+    text-decoration: none;
+}
+
+.catsA a.on, .catsC a.on, .catsA a:hover, .catsC a:hover {
+    color: @button-label;
+}
+
+.catsA a.rev.on, catsA a.rev.on:hover {
+}
+
+.catsA .label, .catsC .label {
+    float: left;
+    color: #646464;
+    margin:4px 5px 0px 8px;
+}
+
+.main-page .catsA .label {
+    margin-left: 8px;
+}
+
+.catsB a {
+    background: #eee;
+    border: 1px solid #eee;
+    color: #777;
+    display: block;
+    float: left;
+    height: 22px;
+    line-height: 28px;
+    margin: 5px 0px 0 4px;
+    padding: 0 11px 0 11px;
+    text-decoration: none;
+}
+
+.catsC .first{
+    border:none;
+}
+
 
 /* ----- Headline, containing number of questions and tags selected, check main_page/headline.html ----- */
 

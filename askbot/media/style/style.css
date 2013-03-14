@@ -1035,6 +1035,64 @@ body.anon .search-drop-menu {
 .rss:hover {
   color: #F4A731 !important;
 }
+
+/* ----- Category ----- */
+
+.catBar {
+	position:relative;
+
+}
+
+.catBar span {
+	color: #707070;
+	font-size: 16px;
+	font-family: 'Open Sans Condensed', Arial, sans-serif;
+    float: left;
+    padding: 4px 7px 4px 0px;
+}
+
+.catBar .catsA{
+    float: left;
+    height: 100%;
+}
+
+
+	
+
+
+
+.catBar .catsA a{
+
+    border-left: 1px solid #d0e1e4;
+    color: @section-title;
+    display: block;
+    float: left;
+    height: 20px;
+    line-height: 20px;
+    padding:4px 7px 4px 7px;
+    text-decoration: none;
+}
+
+.catBar .catsA a.on, .catsA a:hover a:hover {
+    color: @button-label;
+}
+
+.catBar .catsA a.rev.on, catsA a.rev.on:hover {
+}
+
+.catBar .catsA .label {
+    float: left;
+    color: #646464;
+    margin:4px 5px 0px 8px;
+}
+
+.catBar .catsA .label {
+    margin-left: 8px;
+}
+
+
+
+
 /* ----- Headline, containing number of questions and tags selected, check main_page/headline.html ----- */
 #questionCount {
   font-weight: bold;

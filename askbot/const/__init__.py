@@ -116,6 +116,8 @@ POST_SCOPE_LIST = (
 )
 DEFAULT_POST_SCOPE = 'all'
 
+DEFAULT_CATEGORY = 'all'
+
 TAG_LIST_FORMAT_CHOICES = (
     ('list', _('list')),
     ('cloud', _('cloud')),

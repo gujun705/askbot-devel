@@ -212,17 +212,19 @@ def ask(request):#view used to ask a new question
     must login/register in order for the question go be shown
     """
     form = forms.AskForm(request.REQUEST, user=request.user)
+
     if request.method == 'POST':
         if form.is_valid():
+            logging.info(request.REQUEST)
             timestamp = datetime.datetime.now()
             title = form.cleaned_data['title']
             wiki = form.cleaned_data['wiki']
             tagnames = form.cleaned_data['tags']
+            category = form.cleaned_data['category']
             text = form.cleaned_data['text']
             ask_anonymously = form.cleaned_data['ask_anonymously']
             post_privately = form.cleaned_data['post_privately']
             group_id = form.cleaned_data.get('group_id', None)
-
             if request.user.is_authenticated():
                 drafts = models.DraftQuestion.objects.filter(
                                                 author=request.user
@@ -235,6 +237,7 @@ def ask(request):#view used to ask a new question
                         title = title,
                         body_text = text,
                         tags = tagnames,
+                        category = category,
                         wiki = wiki,
                         is_anonymous = ask_anonymously,
                         is_private = post_privately,
@@ -274,6 +277,7 @@ def ask(request):#view used to ask a new question
             draft_title = draft.title
             draft_text = draft.text
             draft_tagnames = draft.tagnames
+            draft
 
     form.initial = {
         'title': request.REQUEST.get('title', draft_title),
@@ -388,6 +392,7 @@ def edit_question(request, id):
                                             user=request.user,
                                             revision=revision
                                         )
+                    logging.info(revision.text)
                 else:
                     form = forms.EditQuestionForm(
                                             request.POST,
@@ -406,22 +411,23 @@ def edit_question(request, id):
                 revision_form = forms.RevisionForm(question, revision)
                 if form.is_valid():
                     if form.has_changed():
-
+                        
                         if form.cleaned_data['reveal_identity']:
                             question.thread.remove_author_anonymity()
 
                         is_anon_edit = form.cleaned_data['stay_anonymous']
                         is_wiki = form.cleaned_data.get('wiki', question.wiki)
                         post_privately = form.cleaned_data['post_privately']
-
+                        category = form.cleaned_data['category']
                         user = form.get_post_user(request.user)
-
+                        logging.info(category)
                         user.edit_question(
                             question = question,
                             title = form.cleaned_data['title'],
                             body_text = form.cleaned_data['text'],
                             revision_comment = form.cleaned_data['summary'],
                             tags = form.cleaned_data['tags'],
+                            category = category,
                             wiki = is_wiki,
                             edit_anonymously = is_anon_edit,
                             is_private = post_privately
@@ -440,7 +446,6 @@ def edit_question(request, id):
                                     user=request.user,
                                     initial=initial
                                 )
-
         data = {
             'page_class': 'edit-question-page',
             'active_tab': 'questions',
@@ -669,7 +674,7 @@ def edit_comment(request):
 
     comment_id = int(request.POST['comment_id'])
     comment_post = models.Post.objects.get(post_type='comment', id=comment_id)
-
+    logging.info(comment_post)
     request.user.edit_comment(comment_post=comment_post, body_text = request.POST['comment'])
 
     is_deletable = template_filters.can_delete_comment(comment_post.author, comment_post)

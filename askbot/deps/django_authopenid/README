@@ -3,3 +3,12 @@ specifically for askbot forum project.
 
 most likely it is not useful for anything else and
 in fact will be phased out in askbot as well
+
+Add by Mingze:
+To use the ldap, you should add three parameters in django global settings.
+##############
+#LDAP
+##############
+LDAP_LOGIN_DN = "<domain>\<username>"
+LDAP_PASSWORD = "<password>"
+LDAP_DOMAIN = "<domain>"

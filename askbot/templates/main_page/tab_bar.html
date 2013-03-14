@@ -79,5 +79,28 @@
         }}
     </div>
 </div>
+        <h1 id="questionCount" class="search-result-summary">
+            {% trans cnt=questions_count, q_num=questions_count|intcomma %}{{q_num}} question{% pluralize %}{{q_num}} questions{% endtrans %}
+        {% if author_name %}
+            {% trans %}with {{author_name}}'s contributions{% endtrans %}
+        {% endif %}
+        </h1>
+<div class="catBar">
 
+<span><b>Category</b></span>
+
+<div class="catsA" >
+	
+	<a href="{{ search_state.change_category('all').full_url() }}">All</a>
+{% for category in categories %}
+	<a href="{{ search_state.change_category(category).full_url() }}" >
+	{% if category == search_state.category %}
+	<strong>{{ category }}</strong>
+	{% else %}
+	{{ category }}
+	{% endif %}
+	</a>
+{% endfor %}
+</div>
+</div>
 {% endcache %}

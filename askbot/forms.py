@@ -3,6 +3,7 @@ used in AskBot"""
 import re
 from django import forms
 from askbot import const
+from askbot.models.category import Category
 from askbot.const import message_keys
 from django.core.exceptions import PermissionDenied
 from django.forms.util import ErrorList
@@ -33,7 +34,8 @@ def format_form_errors(form):
     if there is only one error - returns a plain string
     if more than one, returns an unordered list of errors
     in HTML format.
-    If there are no errors, returns empty string
+    If there are no errors, returns eForm(request.REQUEST, user=request.user)
+mpty string
     """
     if form.errors:
         errors = form.errors.values()
@@ -216,6 +218,22 @@ class DomainNameField(forms.CharField):
             raise forms.ValidationError(
                 '%s is not a valid domain name' % value
             )
+            
+class CategoryField(forms.ChoiceField):
+    """Fild receiving question title"""
+    def __init__(self, *args, **kwargs):
+        super(CategoryField, self).__init__(*args, **kwargs)
+        self.required = True
+ 
+        self.label = _('Category:')
+        self.widget = forms.Select()
+        self.help_text = _(
+            'You must select a category'
+        )
+    def clean(self, value):
+        if value == "No selection":
+            raise forms.ValidationError("A category is required.")
+        return value
 
 
 class TitleField(forms.CharField):
@@ -231,7 +249,7 @@ class TitleField(forms.CharField):
         self.help_text = _(
             'please enter a descriptive title for your question'
         )
-        self.initial = ''
+        self.initial = 'Enter a title here'
 
     def clean(self, value):
         """cleans the field for minimum and maximum length
@@ -905,6 +923,7 @@ class AskForm(PostAsSomeoneForm, PostPrivatelyForm):
     """
     title = TitleField()
     tags = TagNamesField()
+    category = CategoryField()
     wiki = WikiField()
     group_id = forms.IntegerField(required = False, widget = forms.HiddenInput)
     ask_anonymously = forms.BooleanField(
@@ -925,9 +944,15 @@ class AskForm(PostAsSomeoneForm, PostPrivatelyForm):
         super(AskForm, self).__init__(*args, **kwargs)
         #it's important that this field is set up dynamically
         self.fields['text'] = QuestionEditorField(user=user)
+        choices = []
+        for item in Category.objects.all():
+            choices.append(item.name)
+        self.fields['category'].choices = choices
         #hide ask_anonymously field
         if askbot_settings.ALLOW_ASK_ANONYMOUSLY is False:
             self.hide_field('ask_anonymously')
+
+
 
     def clean_ask_anonymously(self):
         """returns false if anonymous asking is not allowed
@@ -1178,7 +1203,9 @@ class RevisionForm(forms.Form):
 class EditQuestionForm(PostAsSomeoneForm, PostPrivatelyForm):
     title = TitleField()
     tags = TagNamesField()
+    category = CategoryField()
     summary = SummaryField()
+    
     wiki = WikiField()
     reveal_identity = forms.BooleanField(
         help_text=_(
@@ -1189,6 +1216,7 @@ class EditQuestionForm(PostAsSomeoneForm, PostPrivatelyForm):
         label=_('reveal identity'),
         required=False,
     )
+    
 
     #todo: this is odd that this form takes question as an argument
     def __init__(self, *args, **kwargs):
@@ -1203,6 +1231,12 @@ class EditQuestionForm(PostAsSomeoneForm, PostPrivatelyForm):
         self.fields['text'].initial = revision.text
         self.fields['tags'].initial = revision.tagnames
         self.fields['wiki'].initial = self.question.wiki
+        choices = []
+        for item in Category.objects.all():
+            choices.append((item.name, item.name))
+            
+        self.fields['category'].choices = choices                 
+        self.fields['category'].initial = revision.category
         #hide the reveal identity field
         if not self.can_stay_anonymous():
             self.hide_field('reveal_identity')

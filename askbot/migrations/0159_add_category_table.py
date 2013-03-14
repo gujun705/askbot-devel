@@ -1,31 +1,28 @@
-# -*- coding: utf-8 -*-
+'''
+Created on Mar 8, 2013
+
+@author: Mingze
+'''
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-
 class Migration(SchemaMigration):
-
     def forwards(self, orm):
-        # Deleting field 'AnonymousQuestion.summary'
-#        db.delete_column('askbot_anonymousquestion', 'summary')
 
-        # Deleting field 'AnonymousAnswer.summary'
-#        db.delete_column('askbot_anonymousanswer', 'summary')
-        pass
-    
+        # Create table 'category'
+        db.create_table('category', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length = 255, default=None, null=False)),
+        ))        
+        db.send_create_signal('askbot', ['Category'])
+
+
     def backwards(self, orm):
-        # Adding field 'AnonymousQuestion.summary'
-        db.add_column('askbot_anonymousquestion', 'summary',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=180),
-                      keep_default=False)
-
-        # Adding field 'AnonymousAnswer.summary'
-        db.add_column('askbot_anonymousanswer', 'summary',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=180),
-                      keep_default=False)
-
+        # Deleting field 'Thread.category_id'
+        db.delete_column('askbot_thread', 'category_id')
+        
     models = {
         'askbot.activity': {
             'Meta': {'object_name': 'Activity', 'db_table': "u'activity'"},
@@ -56,6 +53,7 @@ class Migration(SchemaMigration):
             'ip_addr': ('django.db.models.fields.IPAddressField', [], {'max_length': '15'}),
             'question': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'anonymous_answers'", 'to': "orm['askbot.Post']"}),
             'session_key': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
+            'summary': ('django.db.models.fields.CharField', [], {'max_length': '180'}),
             'text': ('django.db.models.fields.TextField', [], {}),
             'wiki': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
@@ -67,6 +65,7 @@ class Migration(SchemaMigration):
             'ip_addr': ('django.db.models.fields.IPAddressField', [], {'max_length': '15'}),
             'is_anonymous': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'session_key': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
+            'summary': ('django.db.models.fields.CharField', [], {'max_length': '180'}),
             'tagnames': ('django.db.models.fields.CharField', [], {'max_length': '125'}),
             'text': ('django.db.models.fields.TextField', [], {}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '300'}),
@@ -132,9 +131,7 @@ class Migration(SchemaMigration):
         },
         'askbot.group': {
             'Meta': {'object_name': 'Group', '_ormbases': ['auth.Group']},
-            'description': ('django.db.models.fields.related.OneToOneField', [], {'blank': 'True', 'related_name': "'described_group'", 'unique': 'True', 'null': 'True', 'to': "orm['askbot.Post']"}),
             'group_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.Group']", 'unique': 'True', 'primary_key': 'True'}),
-            'is_vip': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'logo_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True'}),
             'moderate_answers_to_enquirers': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'moderate_email': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -177,9 +174,9 @@ class Migration(SchemaMigration):
             'old_comment_id': ('django.db.models.fields.PositiveIntegerField', [], {'default': 'None', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'old_question_id': ('django.db.models.fields.PositiveIntegerField', [], {'default': 'None', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'parent': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'comments'", 'null': 'True', 'to': "orm['askbot.Post']"}),
-            'points': ('django.db.models.fields.IntegerField', [], {'default': '0', 'db_column': "'score'"}),
             'post_type': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
-            'summary': ('django.db.models.fields.TextField', [], {'null': 'True'}),
+            'score': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'summary': ('django.db.models.fields.CharField', [], {'max_length': '180'}),
             'text': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'thread': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'posts'", 'null': 'True', 'blank': 'True', 'to': "orm['askbot.Thread']"}),
             'vote_down_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
@@ -291,7 +288,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'last_activity_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_activity_by': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'unused_last_active_in_threads'", 'to': "orm['auth.User']"}),
-            'points': ('django.db.models.fields.IntegerField', [], {'default': '0', 'db_column': "'score'"}),
+            'score': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'tagnames': ('django.db.models.fields.CharField', [], {'max_length': '125'}),
             'tags': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'threads'", 'symmetrical': 'False', 'to': "orm['askbot.Tag']"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '300'}),
@@ -301,8 +298,7 @@ class Migration(SchemaMigration):
             'Meta': {'unique_together': "(('thread', 'group'),)", 'object_name': 'ThreadToGroup', 'db_table': "'askbot_thread_groups'"},
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['askbot.Group']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'thread': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['askbot.Thread']"}),
-            'visibility': ('django.db.models.fields.SmallIntegerField', [], {'default': '1'})
+            'thread': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['askbot.Thread']"})
         },
         'askbot.vote': {
             'Meta': {'unique_together': "(('user', 'voted_post'),)", 'object_name': 'Vote', 'db_table': "u'vote'"},

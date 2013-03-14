@@ -2,6 +2,7 @@
 import re
 import urllib
 import copy
+import logging
 
 from django.core import urlresolvers
 from django.utils.http import urlencode
@@ -87,13 +88,19 @@ class SearchState(object):
     def get_empty(cls):
         return cls(scope=None, sort=None, query=None, tags=None, author=None, page=None, user_logged_in=None)
 
-    def __init__(self, scope, sort, query, tags, author, page, user_logged_in):
+    def __init__(self, scope, sort, query, tags, author, page, user_logged_in, category = None):
         # INFO: zip(*[('a', 1), ('b', 2)])[0] == ('a', 'b')
 
         if (scope not in zip(*const.POST_SCOPE_LIST)[0]) or (scope == 'favorite' and not user_logged_in):
             self.scope = const.DEFAULT_POST_SCOPE
         else:
             self.scope = scope
+            
+
+        if not category:
+            self.category = const.DEFAULT_CATEGORY
+        else:
+            self.category = category
 
         self.query = query.strip() if query else None
 
@@ -134,6 +141,7 @@ class SearchState(object):
             self.page = 1
 
         self._questions_url = urlresolvers.reverse('questions')
+        
 
     def __str__(self):
         return self.query_string()
@@ -177,7 +185,8 @@ class SearchState(object):
 
         lst = [
             'scope:' + self.scope,
-            'sort:' + self.sort
+            'sort:' + self.sort,
+            'category:' + self.category
         ]
 
         if self.query:
@@ -253,8 +262,12 @@ class SearchState(object):
         ss = self.deepcopy()
         ss.page = new_page
         return ss
-
-
+    
+    def change_category(self, new_category):
+        ss = self.deepcopy()
+        ss.category = new_category
+        return ss
+    
 class DummySearchState(object): # Used for caching question/thread summaries
 
     def add_tag(self, tag):

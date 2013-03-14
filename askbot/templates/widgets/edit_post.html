@@ -6,6 +6,9 @@
             {{ post_form.title.help_text }}
         </div>
     </div>
+    <div class="form-item">
+    	<label for="id_category"><strong>{{ post_form.category.label_tag() }}:</strong></label> <span class="form-error"></span><br/>
+		{{ post_form.category }}
 {% endif %}
 {% if editor_type == 'markdown' %}
     <div class="wmd-container">

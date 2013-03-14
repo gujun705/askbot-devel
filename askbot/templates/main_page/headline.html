@@ -1,12 +1,9 @@
 {% import "macros.html" as macros %}
 {% if questions_count > 0 %}
-        <h1 id="questionCount" class="search-result-summary">
-            {% trans cnt=questions_count, q_num=questions_count|intcomma %}{{q_num}} question{% pluralize %}{{q_num}} questions{% endtrans %}
-        {% if author_name %}
-            {% trans %}with {{author_name}}'s contributions{% endtrans %}
-        {% endif %}
-        </h1>
+
+
         <div class="clearfix"></div>
+
         <div id="listSearchTags" {% if not search_tags %}style="display: none;"{% endif %}>
             <span class="left">{% trans %}Tagged{% endtrans %}</span>
             {{ macros.tag_list_widget(
