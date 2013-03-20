@@ -303,6 +303,7 @@ class EmailFeedSetting(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
     reported_at = models.DateTimeField(null=True)
     objects = EmailFeedSettingManager()
+    
 
     class Meta:
         #added to make account merges work properly

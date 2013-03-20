@@ -91,7 +91,7 @@
 
 <div class="catsA" >
 	
-	<a href="{{ search_state.change_category('all').full_url() }}">All</a>
+	<a href="{% url questions %}">All</a>
 {% for category in categories %}
 	<a href="{{ search_state.change_category(category).full_url() }}" >
 	{% if category == search_state.category %}

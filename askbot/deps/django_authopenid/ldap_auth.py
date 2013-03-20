@@ -67,7 +67,7 @@ def ldap_authenticate_default(username, password):
         else:
             raise NotImplementedError('unsupported version of ldap protocol')
 
-        ldap.set_option(ldap.OPT_REFERRALS, 0)
+        ldap_session.set_option(ldap.OPT_REFERRALS, 0)
 
         #set extra ldap options, if given
         if hasattr(django_settings, 'LDAP_EXTRA_OPTIONS'):
@@ -100,10 +100,11 @@ def ldap_authenticate_default(username, password):
                     )
 
         email_field = askbot_settings.LDAP_EMAIL_FIELD
-
+        photo_field = "extensionAttribute1"
         get_attrs = [
             email_field.encode(encoding),
-            login_name_field.encode(encoding)
+            login_name_field.encode(encoding),
+            photo_field
             #str(askbot_settings.LDAP_USERID_FIELD)
             #todo: here we have a chance to get more data from LDAP
             #maybe a point for some plugin
@@ -139,11 +140,13 @@ def ldap_authenticate_default(username, password):
                 common_name_format = askbot_settings.LDAP_COMMON_NAME_FIELD_FORMAT
                 common_name = user_information.get(common_name_field, [''])[0]
                 first_name, last_name = split_name(common_name, common_name_format)
-
+            
+            
             user_info = {
                 'first_name': first_name,
                 'last_name': last_name,
                 'ldap_username': user_information[login_name_field][0],
+                'photo': user_information[photo_field][0],
                 'success': True
             }
 
@@ -165,7 +168,7 @@ def ldap_authenticate_default(username, password):
         LOG.error("Unexpected Exception Occurred")
         LOG.exception(e)
         user_info['success'] = False
-
+    LOG.info("User info: %s" % user_info)
     return user_info
 
 
@@ -181,6 +184,7 @@ def ldap_create_user_default(user_info):
     user.first_name = user_info['first_name']
     user.last_name = user_info['last_name']
     user.email = user_info['email']
+    user.photo = user_info['photo']
     user.is_staff = False
     user.is_superuser = False
     user.is_active = True
