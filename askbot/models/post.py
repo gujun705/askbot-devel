@@ -1620,6 +1620,7 @@ class Post(models.Model):
                     self,
                     edited_at=None,
                     edited_by=None,
+                    category=None,
                     text=None,
                     comment=None,
                     wiki=False,
@@ -1648,6 +1649,7 @@ class Post(models.Model):
         self.add_revision(
             author = edited_by,
             revised_at = edited_at,
+            category = category,
             text = text,
             comment = comment,
             by_email = by_email
