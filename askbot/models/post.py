@@ -1769,6 +1769,7 @@ class Post(models.Model):
                     self,
                     author = None,
                     revised_at = None,
+                    category =  None,
                     text = None,
                     comment = None,
                     by_email = False
