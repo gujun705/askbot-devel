@@ -1462,6 +1462,7 @@ class AnonymousQuestion(DraftContent):
     title = models.CharField(max_length=300)
     tagnames = models.CharField(max_length=125)
     is_anonymous = models.BooleanField(default=False)
+    category = models.ForeignKey(Category)
 
     def publish(self, user):
         added_at = datetime.datetime.now()
@@ -1473,6 +1474,7 @@ class AnonymousQuestion(DraftContent):
                 added_at = added_at,
                 author = user,
                 wiki = self.wiki,
+                category = self.category,
                 is_anonymous = self.is_anonymous,
                 tagnames = self.tagnames,
                 text = self.text,
@@ -1486,6 +1488,7 @@ class AnonymousQuestion(DraftContent):
             DraftQuestion.objects.create(
                             author=user,
                             title=self.title,
+                            category=self.category,
                             text=self.text,
                             tagnames=self.tagnames
                         )

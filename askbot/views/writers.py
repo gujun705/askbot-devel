@@ -252,10 +252,12 @@ def ask(request):#view used to ask a new question
             else:
                 request.session.flush()
                 session_key = request.session.session_key
+                category_instance = models.Category.objects.get(name = category)
                 models.AnonymousQuestion.objects.create(
                     session_key = session_key,
                     title       = title,
                     tagnames = tagnames,
+                    category_id = category_instance.id,
                     wiki = wiki,
                     is_anonymous = ask_anonymously,
                     text = text,
