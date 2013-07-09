@@ -41,6 +41,7 @@ from askbot.models.base import BaseQuerySetManager, DraftContent
 #todo: maybe merge askbot.utils.markup and forum.utils.html
 from askbot.utils.diff import textDiff as htmldiff
 from askbot.search import mysql
+from askbot import mail
 
 class PostToGroup(models.Model):
     post = models.ForeignKey('Post')
@@ -492,8 +493,28 @@ class Post(models.Model):
             'newly_mentioned_users': mentioned_authors,
             'removed_mentions': removed_mentions,
             }
-        return data
 
+        
+        return data
+        
+    def _send_mail_to_tech_committee(self):
+
+        recipients = ['QETechnicalCommittee']
+        logging.error(self.thread.title)
+        for recipient in recipients:
+            recipient = "%s@microstrategy.com" % recipient
+        mail.send_mail(
+        subject_line = "New question posted - %s" % self.thread.title,
+        body_text = "Question:  %s </p> View details: http://askbot/question/%s/%s <br>\
+                     Answer the question or forward to persons who may know the answer.<br><br>\
+                     Askbot - QEs' internal source for knowledge. \
+                     Browse the <a href='http://askbot/questions'>complete list of questions</a>\
+                     and help us answer <a href='http://askbot/questions/scope:unanswered'>unanswered questions</a>." 
+                     % (self.thread.title,self.pk,self.thread.title.replace(' ','-')),
+        recipient_list = recipients,
+        activity_type = const.TYPE_ACTIVITY_VALIDATION_EMAIL_SENT,
+        headers = {'Reply-To': "askbot@microstrategy.com"}
+    )
     #todo: when models are merged, it would be great to remove author parameter
     def parse_and_save(self, author=None, **kwargs):
         """generic method to use with posts to be used prior to saving
@@ -526,7 +547,10 @@ class Post(models.Model):
         #as well as assigning groups to the post
         #because generic relation needs primary key of the related object
         super(self.__class__, self).save(**kwargs)
-
+        
+        if created and self.post_type == 'question':
+            self._send_mail_to_tech_committee()
+            
         if self.is_comment():
             #copy groups from the parent post into the comment
             groups = self.parent.groups.all()
