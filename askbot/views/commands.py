@@ -879,7 +879,9 @@ def delete_post(request):
 
 # by Jun
 def __update_presentation(post, delete):
-    if post.thread_id == 1: # hard code the thread_id here since it won't be changed
+    from askbot.models import is_presentation_thread
+    if is_presentation_thread(post.thread_id):
+    #if post.thread_id == 1: # hard code the thread_id here since it won't be changed
         if post.is_answer():
             presentations = models.Presentation.objects.filter(answer=post)
             if len(presentations) == 0:

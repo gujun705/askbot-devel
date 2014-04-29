@@ -501,8 +501,8 @@ class Post(models.Model):
 
         recipients = ['QETechnicalCommittee']
         logging.error(self.thread.title)
-        for recipient in recipients:
-            recipient = "%s@microstrategy.com" % recipient
+        #for recipient in recipients:
+        #    recipient = "%s@microstrategy.com" % recipient
         mail.send_mail(
         subject_line = "New question posted - %s" % self.thread.title,
         body_text = "Question:  %s </p> View details: http://askbot/question/%s/%s <br>\

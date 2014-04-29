@@ -3594,6 +3594,13 @@ def moderate_group_joining(sender, instance=None, created=False, **kwargs):
                 content_object = group
             )
 
+def is_presentation_thread(thread_id):
+    t = Thread.objects.all().filter(title="Presentation tracking  for within-team knowledge sharing")
+    if len(t) > 0:
+        if t[0].id == thread_id:
+            return True
+    return False
+
 #signal for User model save changes
 django_signals.pre_save.connect(make_admin_if_first_user, sender=User)
 django_signals.pre_save.connect(calculate_gravatar_hash, sender=User)

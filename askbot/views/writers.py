@@ -517,7 +517,7 @@ def edit_answer(request, id):
                             #todo: add wiki field to form
                         )
                         # by Jun
-                        __save_presentation(None, answer, form.cleaned_data['text'])
+                        __save_presentation(None, answer, form.cleaned_data['text'], user)
                     return HttpResponseRedirect(answer.get_absolute_url())
         else:
             revision_form = forms.RevisionForm(answer, revision)
@@ -578,7 +578,7 @@ def answer(request, id):#process a new answer
                                         timestamp = update_time,
                                     )
                     # by Jun
-                    __save_presentation(question, answer, text)
+                    __save_presentation(question, answer, text, user)
                     
                     return HttpResponseRedirect(answer.get_absolute_url())
                 except askbot_exceptions.AnswerAlreadyGiven, e:
@@ -601,19 +601,22 @@ def answer(request, id):#process a new answer
     return HttpResponseRedirect(question.get_absolute_url())
 
 # update presentation table, by Jun
-def __save_presentation(question, answer, text):
+def __save_presentation(question, answer, text, user):
     # we only process thread whose id equals 1
-    # we hard coded here since it will be changed
-    if answer.thread_id == 1:
-        m = re.search('Subject:?(?P<subject>.*)', text, re.I)
+    # we hard coded here since it will not be changed
+    from askbot.models import is_presentation_thread
+    if is_presentation_thread(answer.thread_id):
+    #if answer.thread_id == 1:
+        # (\*\*)? when bold
+        m = re.search('Subject(\*\*)?:?(?P<subject>.*)', text, re.I)
         subject = m.group('subject')
         if subject is None:
             return
-        m = re.search('Presenter:?(?P<presenter>.*)', text, re.I)
+        m = re.search('Presenter(\*\*)?:?(?P<presenter>.*)', text, re.I)
         presenter = m.group('presenter')
         if presenter is None:
             presenter = ""
-        m = re.search('Team:?(?P<team>.*)', text, re.I)
+        m = re.search('Team(\*\*)?:?(?P<team>.*)', text, re.I)
         team = m.group('team')
         if team is None:
             team = ""
@@ -636,7 +639,23 @@ def __save_presentation(question, answer, text):
         #presentation.present_at=str(datetime.datetime.now())
         #presentation.create_at=str(datetime.datetime.now())
         presentation.update_at=str(datetime.datetime.now())
+        
+        __notify_if_duplicate_subject(subject, user, presentation.link)
+        
         presentation.save()
+
+def __notify_if_duplicate_subject(subject, user, link):
+    presentations = models.Presentation.objects.filter(subject=subject, deleted=False)
+    if len(presentations) > 0:
+        from askbot import mail, const
+        mail.send_mail(
+            subject_line = "Duplicate presentation subject",
+            body_text = "You may need to change the subject of <a href='http://askbot%s'>this post</a>. <br/> <br/>\
+                This mail is sent automatically, please do not reply." % link,
+            recipient_list = [user.email],
+            activity_type = const.TYPE_ACTIVITY_VALIDATION_EMAIL_SENT,
+            headers = {'Reply-To': "askbot@microstrategy.com"}
+        )
 
 def __generate_comments_json(obj, user):#non-view generates json data for the post comments
     """non-view generates json data for the post comments
