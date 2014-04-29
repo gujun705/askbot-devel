@@ -10,3 +10,6 @@ from askbot.views import widgets
 from django.conf import settings
 if 'avatar' in settings.INSTALLED_APPS:
     from askbot.views import avatar_views
+
+# FIXME: by Jun
+from askbot.views import presentations

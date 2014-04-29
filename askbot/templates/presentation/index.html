@@ -1,0 +1,30 @@
+{% extends 'one_column_body.html' %}
+{% block title %}{% trans %}Presentation{% endtrans %}{% endblock %}
+{% block content %}
+	<h3>{% trans %}Presentations Posted{% endtrans %}</h3>
+	{# will not check if presentations is empty since we already have a lot #}
+	{# use inline style since I do not want to pollute the overall style #}
+    <table id="presentation_list" style="border: 1px solid silver; margin: 10px 5px; width: 100%">
+		<thead style="background-color: rgba(226, 226, 226, 0.80)">
+			<th style="border-right: 1px solid silver; width: 45%">Subject</th>
+			<th style="border-right: 1px solid silver; width: 20%">Presenter</th>
+			<th style="border-right: 1px solid silver; width: 25%">Team</th>
+			<th>Publish Date</th>
+		</thead>
+		<tbody>
+        {% for present in presentations %}
+			<tr style="border-top: 1px solid silver">
+				<td style="padding: 0 5px; border-right: 1px solid silver; width: 45%"><a href="{{present.link}}">{{present.subject}}</a></td>
+				<td style="padding: 0 5px; border-right: 1px solid silver; width: 20%">{{present.presenter}}</td>
+				<td style="padding: 0 5px; border-right: 1px solid silver; width: 25%">{{present.team}}</td>
+				<td style="padding: 0 5px">{{present.create_at|date('Y-m-d')}}</td>
+			</tr>
+        {% endfor %}
+		</tbody>
+		<tfoot>
+			<tr style="border-top: 1px solid silver; background-color: rgba(226, 226, 226, 0.80)">
+				<td colspan="4" style="padding: 0 5px; text-align: right">{{presentations|length}} Presentations In Total</td>
+			</tr>
+		</tfoot>
+	</table>
+{% endblock %}

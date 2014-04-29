@@ -67,6 +67,9 @@ from askbot.utils.diff import textDiff as htmldiff
 from askbot.utils.url_utils import strip_path
 from askbot import mail
 
+# by Jun
+from askbot.models.presentation import Presentation
+
 from django import get_version as django_version
 
 if django_version() > '1.3.1':
@@ -3664,4 +3667,7 @@ __all__ = [
         'ReplyAddress',
 
         'get_model',
+
+        # by Jun
+        'Presentation',
 ]

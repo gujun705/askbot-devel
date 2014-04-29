@@ -866,12 +866,37 @@ def delete_post(request):
             id = post_id
         )
         if form.cleaned_data['cancel_vote']:
+            # by Jun
+            __update_presentation(post, False)
             request.user.restore_post(post)
         else:
+            # by Jun
+            __update_presentation(post, True)
             request.user.delete_post(post)
     else:
         raise ValueError
     return {'is_deleted': post.deleted}
+
+# by Jun
+def __update_presentation(post, delete):
+    if post.thread_id == 1: # hard code the thread_id here since it won't be changed
+        if post.is_answer():
+            presentations = models.Presentation.objects.filter(answer=post)
+            if len(presentations) == 0:
+                return
+            else:
+                presentation = presentations[0]
+                if delete:
+                    presentation.deleted = True
+                    presentation.deleted_at = datetime.datetime.now()
+                else:
+                    presentation.deleted = False
+                    presentation.deleted_at = None
+                presentation.save()
+        else: # What about delete the whole question?
+            # I guess this won't happen though I would be very happy if this happens. :D
+            # TODO: mark all presentations as deleted
+            return
 
 #askbot-user communication system
 @csrf.csrf_exempt

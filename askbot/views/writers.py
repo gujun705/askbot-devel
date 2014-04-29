@@ -4,6 +4,9 @@
 
 This module contains views that allow adding, editing, and deleting main textual content.
 """
+# by Jun
+import re
+
 import datetime
 import logging
 import os
@@ -513,6 +516,8 @@ def edit_answer(request, id):
                             is_private=form.cleaned_data.get('post_privately', False)
                             #todo: add wiki field to form
                         )
+                        # by Jun
+                        __save_presentation(None, answer, form.cleaned_data['text'])
                     return HttpResponseRedirect(answer.get_absolute_url())
         else:
             revision_form = forms.RevisionForm(answer, revision)
@@ -572,6 +577,9 @@ def answer(request, id):#process a new answer
                                         is_private = is_private,
                                         timestamp = update_time,
                                     )
+                    # by Jun
+                    __save_presentation(question, answer, text)
+                    
                     return HttpResponseRedirect(answer.get_absolute_url())
                 except askbot_exceptions.AnswerAlreadyGiven, e:
                     request.user.message_set.create(message = unicode(e))
@@ -591,6 +599,44 @@ def answer(request, id):#process a new answer
                 return HttpResponseRedirect(url_utils.get_login_url())
 
     return HttpResponseRedirect(question.get_absolute_url())
+
+# update presentation table, by Jun
+def __save_presentation(question, answer, text):
+    # we only process thread whose id equals 1
+    # we hard coded here since it will be changed
+    if answer.thread_id == 1:
+        m = re.search('Subject:?(?P<subject>.*)', text, re.I)
+        subject = m.group('subject')
+        if subject is None:
+            return
+        m = re.search('Presenter:?(?P<presenter>.*)', text, re.I)
+        presenter = m.group('presenter')
+        if presenter is None:
+            presenter = ""
+        m = re.search('Team:?(?P<team>.*)', text, re.I)
+        team = m.group('team')
+        if team is None:
+            team = ""
+        subject = subject.strip()
+        presenter = presenter.strip()
+        team = team.strip()
+        presentations = models.Presentation.objects.filter(answer=answer)
+        presentation = None
+        if len(presentations) == 0:
+            presentation = models.Presentation()
+        else:
+            presentation = presentations[0]
+        presentation.subject=subject
+        presentation.presenter=presenter
+        presentation.team=team
+        if not question is None:
+            presentation.link=answer.get_absolute_url(question_post=question)
+        presentation.answer=answer
+        # FIXME: parse text to get time
+        #presentation.present_at=str(datetime.datetime.now())
+        #presentation.create_at=str(datetime.datetime.now())
+        presentation.update_at=str(datetime.datetime.now())
+        presentation.save()
 
 def __generate_comments_json(obj, user):#non-view generates json data for the post comments
     """non-view generates json data for the post comments
