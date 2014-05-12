@@ -329,9 +329,10 @@ class ThreadManager(BaseQuerySetManager):
                 followed_users = request_user.get_followed_users()
                 favorite_filter |= models.Q(posts__post_type__in=('question', 'answer'), posts__author__in=followed_users)
             qs = qs.filter(favorite_filter)
-            
-        if search_state.category != 'all':
-            qs = qs.filter(category=Category.objects.filter(name=search_state.category))
+        
+        # by Jun
+        if search_state.category.name != 'all':
+            qs = qs.filter(category=Category.objects.filter(name=search_state.category.name))
 
         #user contributed questions & answers
         if search_state.author:

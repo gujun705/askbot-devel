@@ -13,6 +13,9 @@ import askbot.conf
 from askbot import const
 from askbot.utils.functions import strip_plus
 
+#by Jun
+from askbot.models.category import Category
+
 
 def extract_matching_token(text, regexes):
     """if text matches any of the regexes,
@@ -98,9 +101,16 @@ class SearchState(object):
             
 
         if not category:
-            self.category = const.DEFAULT_CATEGORY
+            # by Jun
+            #self.category = const.DEFAULT_CATEGORY
+            self.category = Category.create(const.DEFAULT_CATEGORY)
         else:
-            self.category = category
+            # by Jun
+            #self.category = category
+            if const.DEFAULT_CATEGORY == category:
+                self.category = Category.create(category)
+            else:
+                self.category = Category.objects.get(name=category)
 
         self.query = query.strip() if query else None
 
@@ -186,7 +196,9 @@ class SearchState(object):
         lst = [
             'scope:' + self.scope,
             'sort:' + self.sort,
-            'category:' + self.category
+            # by Jun
+            #'category:' + self.category
+            'category:' + self.category.name
         ]
 
         if self.query:
@@ -267,6 +279,9 @@ class SearchState(object):
         ss = self.deepcopy()
         ss.category = new_category
         return ss
+    
+    def is_default_category(self):
+        return self.category.name == const.DEFAULT_CATEGORY
     
 class DummySearchState(object): # Used for caching question/thread summaries
 

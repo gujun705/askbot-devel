@@ -91,16 +91,25 @@
 
 <div class="catsA" >
 	
-	<a href="{% url questions %}">All</a>
-{% for category in categories %}
-	<a href="{{ search_state.change_category(category).full_url() }}" >
-	{% if category == search_state.category %}
-	<strong>{{ category }}</strong>
+	<a href="{% url questions %}">
+	{% if search_state.is_default_category() %}
+		<strong>All</strong>
 	{% else %}
-	{{ category }}
+		All
+	{% endif %}
+	</a>
+{% for category in categories %}
+	<a href="{{ search_state.change_category(category).full_url() }}" title="{{ category.desc }}">
+	{% if category.name == search_state.category.name %}
+	<strong>{{ category.name }}</strong>
+	{% else %}
+	{{ category.name }}
 	{% endif %}
 	</a>
 {% endfor %}
+	{% if not search_state.is_default_category() %}
+	<p> * {{ search_state.category.desc }} </p>
+	{% endif %}
 </div>
 </div>
 {% endcache %}

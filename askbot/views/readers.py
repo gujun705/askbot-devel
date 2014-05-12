@@ -114,7 +114,9 @@ def questions(request, **kwargs):
 
     categories = []
     for item in Category.objects.all():
-        categories.append(item.name)
+        # by Jun
+        categories.append(item)
+        #categories.append(item.name)
 
     paginator_context = {
         'is_paginated' : (paginator.count > page_size),
@@ -185,7 +187,7 @@ def questions(request, **kwargs):
             'query_data': {
                 'tags': search_state.tags,
                 'sort_order': search_state.sort,
-                'category': search_state.category,
+                'category': search_state.category.name,
                 'ask_query_string': search_state.ask_query_string(),
             },
             'paginator': paginator_html,

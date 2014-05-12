@@ -1090,6 +1090,12 @@ body.anon .search-drop-menu {
     margin-left: 8px;
 }
 
+.catBar .catsA p {
+	float: left;
+	color: #4a757f;
+	margin: 10px 0;
+}
+
 
 
 
