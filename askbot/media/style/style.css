@@ -1056,11 +1056,6 @@ body.anon .search-drop-menu {
     height: 100%;
 }
 
-
-	
-
-
-
 .catBar .catsA a{
 
     border-left: 1px solid #d0e1e4;
@@ -1091,11 +1086,32 @@ body.anon .search-drop-menu {
 }
 
 .catBar .catsA p {
-	float: left;
-	color: #4a757f;
-	margin: 10px 0;
+    float: left;
+    color: #4a757f;
+    margin: 10px 0;
 }
 
+.catBar .catsA p:before {
+    content: '';
+    display: block;
+    clear: left;
+}
+
+.suggested-tags .category-suggested-tags {
+	color: #585858;
+	margin: 5px 10px 5px 0;
+	cursor: pointer;
+}
+
+.suggested-tags .category-suggested-tags:hover {
+	color: #1A1A1A;
+}
+
+.suggested-tags:after {
+	content: '';
+	display: block;
+	clear: left;
+}
 
 
 

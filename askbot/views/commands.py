@@ -545,6 +545,20 @@ def get_tag_list(request):
     output = '\n'.join(map(escape, tag_names))
     return HttpResponse(output, mimetype = 'text/plain')
 
+@decorators.ajax_only
+def get_suggested_tags(request):
+    category = request.GET['category']
+    print 'category value is ', category
+    category_instance = models.Category.objects.get(name=category)
+    tags = category_instance.tags.all();
+    tag_names = []
+    for tag in tags:
+        tag_names.append(tag.name)
+    print 'tags', tag_names
+    tags_json = simplejson.dumps(tag_names)
+    return HttpResponse(tags_json, mimetype='application/json')
+
+
 @decorators.get_only
 def load_object_description(request):
     """returns text of the object description in text"""

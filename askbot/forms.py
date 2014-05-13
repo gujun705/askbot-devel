@@ -947,6 +947,7 @@ class AskForm(PostAsSomeoneForm, PostPrivatelyForm):
         choices = []
         for item in Category.objects.all():
             choices.append(item.name)
+        choices = sorted(choices, key=lambda x: x)
         self.fields['category'].choices = choices
         #hide ask_anonymously field
         if askbot_settings.ALLOW_ASK_ANONYMOUSLY is False:
@@ -1234,7 +1235,8 @@ class EditQuestionForm(PostAsSomeoneForm, PostPrivatelyForm):
         choices = []
         for item in Category.objects.all():
             choices.append((item.name, item.name))
-            
+        choices = sorted(choices, key=lambda x: x)
+        
         self.fields['category'].choices = choices                 
         self.fields['category'].initial = revision.category
         #hide the reveal identity field

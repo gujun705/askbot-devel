@@ -68,6 +68,9 @@
         <script type='text/javascript' src='{{"/js/wmd/showdown.js"|media}}'></script>
         <script type='text/javascript' src='{{"/js/wmd/wmd.js"|media}}'></script>
     {% endif %}
+    
+    <script type='text/javascript' src='{{"/js/suggested_tags.js"|media}}'></script>
+    
     <script type="text/javascript">
     {% if settings.ENABLE_MATHJAX or settings.MARKUP_CODE_FRIENDLY %}
         var codeFriendlyMarkdown = true;
@@ -107,6 +110,9 @@
             $('#edit_post_form_submit_button').click();
         });
         lanai.highlightSyntax();
+        
+        // by Jun, Category suggested tags
+        new SuggestedTags();
         
     });
     </script>

@@ -274,6 +274,12 @@ urlpatterns = patterns('',
         views.commands.get_tag_list,
         name = 'get_tag_list'
     ),
+    # by Jun
+    url(
+        r'^get-suggested-tags/', # Add parameter? 
+        views.commands.get_suggested_tags,
+        name = 'get_suggested_tags'
+    ),
     url(
         r'^load-object-description/',
         views.commands.load_object_description,
