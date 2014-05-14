@@ -82,43 +82,47 @@ showTags: function(tags) {
 		input = document.getElementById('id_tags'),
 		i = 0,
 		len = tags.length,
-		tempDiv = document.createElement('div'),
 		tag;
-	tempDiv.innerHTML = '<strong>Suggested tags:</strong><span id="suggested_tags_error" class="form-error"></span><br/>';
+	this.container.innerHTML = '<strong>Suggested tags:</strong><span id="suggested_tags_error" class="form-error"></span><br/>';
 	for (; i < len; i++) {
 		tag = document.createElement('span');
 		tag.className = 'category-suggested-tags tag-right';
 		// tag.innerHTML = tags[i];
 		tag.innerText = tags[i];
 		tag.onclick = function() {
-			// TODO: add it to tags input box directly
 			var inputValue = input.value.replace(/^\s*/, '').replace(/\s*$/, ''),
 				inputTags = inputValue.split(/\s+/),
 				j = 0,
 				length = inputTags.length,
 				tagValue = this.innerText;
 			if (length >= _this.maxTags) {
-				if (_this.preventAnimation) return false;
-				_this.preventAnimation = true;
-				var errorSpan = document.getElementById('suggested_tags_error');
-				errorSpan.innerText = 'Cannot add more tags, please use 5 tags or less.';
-				setTimeout(function() {
-					$(errorSpan).animate({opacity: 0}, 400, 'linear', function() {
-						errorSpan.innerText = '';
-						errorSpan.style.opacity = 1;
-						_this.preventAnimation = false;
-					});
-				}, 1500);
+				onError('Cannot add more tags, please use 5 tags or less.');
 				return false;
 			}
 			for (; j < length; j++)
-				if (tagValue == inputTags[j]) return false;
+				if (tagValue == inputTags[j]) {
+					onError('Please do not add duplicate tags.');
+					return false;
+				}
 			input.value = inputValue == '' ? tagValue : (inputValue + ' ' + tagValue);
 			return false;
 		};
-		tempDiv.appendChild(tag);
+		_this.container.appendChild(tag);
 	}
-	this.container.innerHTML = tempDiv.innerHTML;
+	
+	function onError(msg) {
+		if (_this.preventAnimation) return false;
+		_this.preventAnimation = true;
+		var errorSpan = document.getElementById('suggested_tags_error');
+		errorSpan.innerText = msg;
+		setTimeout(function() {
+			$(errorSpan).animate({opacity: 0}, 400, 'linear', function() {
+				errorSpan.innerText = '';
+				errorSpan.style.opacity = 1;
+				_this.preventAnimation = false;
+			});
+		}, 1500);
+	}
 },
 
 };
