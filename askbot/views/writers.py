@@ -609,17 +609,17 @@ def __save_presentation(question, answer, text, user):
     #if answer.thread_id == 1:
         # (\*\*)? when bold
         #m = re.search('Subject(\*\*)?:?(?P<subject>.*)', text, re.I)
-        m = re.search('Subject(\*\*\s*:|:\s*\*\*)?(?P<subject>.*)', text, re.I)
+        m = re.search('Subject(\*\*\s*:|:\s*\*\*|:|\*\*)?(?P<subject>.*)', text, re.I)
         subject = m.group('subject')
         if subject is None:
             return
         #m = re.search('Presenter(\*\*)?:?(?P<presenter>.*)', text, re.I)
-        m = re.search('Presenter(\*\*\s*:|:\s*\*\*)?(?P<presenter>.*)', text, re.I)
+        m = re.search('Presenter(\*\*\s*:|:\s*\*\*|:|\*\*)?(?P<presenter>.*)', text, re.I)
         presenter = m.group('presenter')
         if presenter is None:
             presenter = ""
         #m = re.search('Team(\*\*)?:?(?P<team>.*)', text, re.I)
-        m = re.search('Team(\*\*\s*:|:\s*\*\*)?(?P<team>.*)', text, re.I)
+        m = re.search('Team(\*\*\s*:|:\s*\*\*|:|\*\*)?(?P<team>.*)', text, re.I)
         team = m.group('team')
         if team is None:
             team = ""
