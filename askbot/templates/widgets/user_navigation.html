@@ -23,7 +23,7 @@
     <a class="settings" href="{% url site_settings %}">{% trans %}settings{% endtrans %}</a>
     <a class="widgets" href="{% url widgets %}">{% trans %}widgets{% endtrans %}</a>
 {% endif %}
-    <a class="help" href="{% url "help" %}" title="{% trans %}help{% endtrans %}">Q & A</a>
-<!--    <a class="help" href="{% url "help" %}" title="{% trans %}help{% endtrans %}">{% trans %}help{% endtrans %}</a> -->
-	<a class="help" href="{% url "presentations" %}" title="Presentation Lists">Presentations</a>
+	<a class="help" href="{% url "help" %}" title="{% trans %}help{% endtrans %}">{% trans %}help{% endtrans %}</a>
+	<a class="help" href="{% url "faq" %}" title="{% trans %}faq{% endtrans %}">{% trans %}faq{% endtrans %}</a>
+	<a class="help" href="{% url "presentations" %}" title="Presentation Lists">presentations</a>
 <!--	<a class="help" href="mailto:QETechCommittee@microstrategy.com" title="Report askbot issues to QE tech committee">Report issues</a>-->

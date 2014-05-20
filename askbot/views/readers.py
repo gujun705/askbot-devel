@@ -117,6 +117,7 @@ def questions(request, **kwargs):
         # by Jun
         categories.append(item)
         #categories.append(item.name)
+    categories = sorted(categories, key=lambda x: x.name)
 
     paginator_context = {
         'is_paginated' : (paginator.count > page_size),

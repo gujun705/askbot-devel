@@ -87,14 +87,13 @@ showTags: function(tags) {
 	for (; i < len; i++) {
 		tag = document.createElement('span');
 		tag.className = 'category-suggested-tags tag-right';
-		// tag.innerHTML = tags[i];
-		tag.innerText = tags[i];
+		tag.innerHTML = tags[i];
 		tag.onclick = function() {
 			var inputValue = input.value.replace(/^\s*/, '').replace(/\s*$/, ''),
 				inputTags = inputValue.split(/\s+/),
 				j = 0,
 				length = inputTags.length,
-				tagValue = this.innerText;
+				tagValue = this.innerHTML;
 			if (length >= _this.maxTags) {
 				onError('Cannot add more tags, please use 5 tags or less.');
 				return false;
@@ -114,10 +113,10 @@ showTags: function(tags) {
 		if (_this.preventAnimation) return false;
 		_this.preventAnimation = true;
 		var errorSpan = document.getElementById('suggested_tags_error');
-		errorSpan.innerText = msg;
+		errorSpan.innerHTML = msg;
 		setTimeout(function() {
 			$(errorSpan).animate({opacity: 0}, 400, 'linear', function() {
-				errorSpan.innerText = '';
+				errorSpan.innerHTML = '';
 				errorSpan.style.opacity = 1;
 				_this.preventAnimation = false;
 			});

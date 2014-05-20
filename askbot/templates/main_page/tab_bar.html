@@ -85,12 +85,47 @@
             {% trans %}with {{author_name}}'s contributions{% endtrans %}
         {% endif %}
         </h1>
+        
+<div class="clearfix"></div>
+
 <div class="catBar">
 
-<span><b>Category</b></span>
+<p><span><b>Category</b></span></p>
 
 <div class="catsA" >
-	
+
+
+
+<table><tbody><tr>
+<td>
+	<a href="{% url questions %}">
+	{% if search_state.is_default_category() %}
+		<strong>All</strong>
+	{% else %}
+		All
+	{% endif %}
+	</a>
+</td>
+{% for category in categories %}
+<td>
+	<a href="{{ search_state.change_category(category).full_url() }}" title="{{ category.desc }}">
+	{% if category.name == search_state.category.name %}
+	<strong>{{ category.name }}</strong>
+	{% else %}
+	{{ category.name }}
+	{% endif %}
+	</a>
+</td>
+
+	{% if (loop.index+1) % 3 == 0 %}
+		</tr><tr>
+	{% endif %}
+{% endfor %}
+</tr></tbody></table>
+
+
+
+{#	
 	<a href="{% url questions %}">
 	{% if search_state.is_default_category() %}
 		<strong>All</strong>
@@ -107,9 +142,15 @@
 	{% endif %}
 	</a>
 {% endfor %}
+#}
+
+
 	{% if not search_state.is_default_category() %}
-	<p> * {{ search_state.category.desc }} </p>
+	<p><span> {{ search_state.category.desc }} </span></p>
 	{% endif %}
+
+
+
 </div>
 </div>
 {% endcache %}

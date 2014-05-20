@@ -3,12 +3,34 @@
 {% block title %}{% spaceless %}{% trans %}FAQ{% endtrans %}{% endspaceless %}{% endblock %}
 {% block content %}
 <h1>{% trans %}Frequently Asked Questions {% endtrans %}({% trans %}FAQ{% endtrans %})</h1>
-<h2 class="first">{% trans %}What kinds of questions can I ask here?{% endtrans %}</h2>
-<p>{% trans %}Most importantly - questions should be <strong>relevant</strong> to this community.{% endtrans %}
+
+<h2 class="first">{% trans %}Why should I use internal Q&A site like Askbot?{% endtrans %}</h2>
+<p>{% trans %}You can find more knowledge about our product. The other web does contain more resource, but askbot can narrow down the question we may met in our daily work.{% endtrans %}</p>
+<p>{% trans %}Please refer to <a href='/question/24/why-should-i-use-internal-qa-site-like-askbot/'>this thread</a>.{% endtrans %}</p>
+
+<h2>{% trans %}Is logging onto Askbot with corp credential safe?{% endtrans %}</h2>
+<p> {% trans %}The site use LDAP authentication, so it will not store the password. However, it's http instead of https. So the data is transferred in plain-text, which might be a potential risk. {% endtrans %}</p>
+<p> {% trans %}Please refer to <a href='/question/109/is-logging-onto-askbot-with-corp-credential-safe/'>this thread</a>{% endtrans %}</p>
+
+<h2>{% trans %}What's the database backup policy of this site?{% endtrans %}</h2>
+<p>{% trans %}We will backup the database structure and data everyday since the database is small. {% endtrans %}</p>
+<p>{% trans %}And we will retain the backups with following approach, {% endtrans %}</p>
+<ul>
+	<li>{% trans %}Past 3 months on monthly basis.{% endtrans %}</li>
+	<li>{% trans %}Most recent week on daily basis.{% endtrans %}</li>
+</ul>
+<p>{% trans %}Besides, we will test and verify the backup on monthly basis. {% endtrans %}</p>
+
+<h2>Who should I report to when I find a bug</h2>
+<p>{% trans %}You can mail to <a href='mailto:jugu@microstrategy.com;xiaoliu@microstrategy.com?cc=pyan@microstrategy.com&Subject=Askbot%20issue'>Jun/Vicky</a>{% endtrans %}</p>
+<p>{% trans %}Or you can reply to <a href='/question/516/askbot-issues-consolidation/'>this thread</a> directly.{% endtrans %}</p>
+
+<h2>{% trans %}What kinds of questions can I ask here?{% endtrans %}</h2>
+<p>{% trans %}Most importantly - questions should be <strong>relevant</strong> to technology. {% endtrans %}
 {% trans %}Before you ask - please make sure to search for a similar question. You can search questions by their title or tags.{% endtrans %}
 </p>
 <h2>{% trans %}What kinds of questions should be avoided?{% endtrans %}</h2>
-<p>{% trans %}Please avoid asking questions that are not relevant to this community, too subjective and argumentative.{% endtrans %}
+<p>{% trans %}Please avoid asking questions that are not relevant to technology, too subjective and argumentative.{% endtrans %}
 </p>
 <h2>{% trans %}What should I avoid in my answers?{% endtrans %}</h2>
 <p>{{ settings.APP_TITLE }} {% trans %}is a <strong>question and answer</strong> site - <strong>it is not a discussion group</strong>. Please avoid holding debates in your answers as they tend to dilute the essense of questions and answers. For the brief discussions please use commenting facility.{% endtrans %}</p>
@@ -68,20 +90,26 @@
 <a id='gravatar'></a>
 <h2>{% trans %}How to change my picture (gravatar) and what is gravatar?{% endtrans %}</h2>
 {% trans %}<p>The picture that appears on the users profiles is called <strong>gravatar</strong> (which means <strong>g</strong>lobally <strong>r</strong>ecognized <strong>avatar</strong>).</p><p>Here is how it works: a <strong>cryptographic key</strong> (unbreakable code) is calculated from your email address. You upload your picture (or your favorite alter ego image) the website <a href='http://gravatar.com'><strong>gravatar.com</strong></a> from where we later retreive your image using the key.</p><p>This way all the websites you trust can show your image next to your posts and your email address remains private.</p><p>Please <strong>personalize your account</strong> with an image - just register at <a href='http://gravatar.com'><strong>gravatar.com</strong></a> (just please be sure to use the same email address that you used to register with us). Default image that looks like a kitchen tile is generated automatically.</p>{% endtrans %}
+
+{# 
 <h2>{% trans %}To register, do I need to create new password?{% endtrans %}</h2>
 <p>{% trans %}No, you don't have to. You can login through any service that supports OpenID, e.g. Google, Yahoo, AOL, etc.{% endtrans %}
-<strong><a href="{{ settings.LOGIN_URL }}">{% trans %}"Login now!"{% endtrans %}</a> »</strong> 
+<strong><a href="{{ settings.LOGIN_URL }}">{% trans %}"Login now!"{% endtrans %}</a> »</strong>
 </p>
+ #}
+ 
 <h2>{% trans %}Why other people can edit my questions/answers?{% endtrans %}</h2>
 <p> {% trans %}Goal of this site is...{% endtrans %} {% trans %}So questions and answers can be edited like wiki pages by experienced users of this site and this improves the overall quality of the knowledge base content.{% endtrans %}
 {% trans %}If this approach is not for you, we respect your choice.{% endtrans %}
 </p>
+
 <h2>{% trans %}Still have questions?{% endtrans %}</h2>
 <p>{% trans %}Please <a href='{{ask_question_url}}'>ask</a> your question, help make our community better!{% endtrans %}
 </p>
 </div>
 <script type="text/javascript">
     //highlihts section if url has matching #anchor_name
+    // FIXME: issue here, jQuery has not been loaded yet
     $(document).ready(function (){
         var hash = window.location.hash;
         if (hash.length > 1){

@@ -3912,7 +3912,7 @@ msgstr ""
 
 #: skins/common/templates/authopenid/signin.html:104
 msgid "Login or email"
-msgstr ""
+msgstr "Corp Account"
 
 #: skins/common/templates/authopenid/signin.html:108 utils/forms.py:169
 msgid "Password"

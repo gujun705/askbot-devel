@@ -463,6 +463,11 @@ body.user-messages {
   font-size: 20px;
   font-style: italic;
 }
+/*
+#searchBar input.searchInput, #searchBar div.input-tool-tip {
+  width: 310px;
+}
+*/
 .search-drop-menu {
   box-sizing: border-box;
   background: whitesmoke;
@@ -644,6 +649,12 @@ body.anon .search-drop-menu {
 #searchBar.cancelable {
   padding-right: 82px;
 }
+
+/* by Jun, try to fix issue on IE10 */
+#searchForm div.clearfix {
+	height: 55px;
+}
+
 /* ----- Content layout, check two_column_body.html or one_column_body.html ----- */
 #ContentLeft {
   width: 730px;
@@ -1040,7 +1051,26 @@ body.anon .search-drop-menu {
 
 .catBar {
 	position:relative;
+}
+/*
+.catBar:before {
+	display: block;
+	content: '';
+	clear: both;
+}
 
+.catBar:after {
+	display: block;
+	content: '';
+	clear: both;
+}*/
+
+.catBar p {
+	color: #707070;
+	font-size: 16px;
+	font-family: 'Open Sans Condensed', Arial, sans-serif;
+    float: left;
+    padding: 4px 7px 4px 0px;
 }
 
 .catBar span {
@@ -1054,22 +1084,49 @@ body.anon .search-drop-menu {
 .catBar .catsA{
     float: left;
     height: 100%;
+    width: 100%;
+}
+
+.catBar .catsA table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+/*
+.catBar .catsA tr {
+	border: 1px solid #d0e1e4;
+}*/
+
+.catBar .catsA td {
+	border: 1px solid #d0e1e4;
+	width: 33.3%;
+	overflow: hidden;
 }
 
 .catBar .catsA a{
 
-    border-left: 1px solid #d0e1e4;
-    color: @section-title;
+/*    border-left: 1px solid #d0e1e4; 
+    color: #7ea9b3; */ 
+    color: #4a757f;
     display: block;
-    float: left;
+/*    float: left; */
     height: 20px;
     line-height: 20px;
     padding:4px 7px 4px 7px;
     text-decoration: none;
+    
+/*    margin: 2px 0; */
+	font-size: 13px;
 }
 
+.catBar .catsA a:hover {
+	color: #2D5E69;
+
+}
+
+/*
 .catBar .catsA a.on, .catsA a:hover a:hover {
-    color: @button-label;
+    color: #4a757f;
 }
 
 .catBar .catsA a.rev.on, catsA a.rev.on:hover {
@@ -1079,22 +1136,31 @@ body.anon .search-drop-menu {
     float: left;
     color: #646464;
     margin:4px 5px 0px 8px;
-}
-
-.catBar .catsA .label {
     margin-left: 8px;
 }
 
 .catBar .catsA p {
     float: left;
     color: #4a757f;
-    margin: 10px 0;
 }
 
 .catBar .catsA p:before {
     content: '';
     display: block;
     clear: left;
+}*/
+
+.catBar .catsA p {
+	width: 100%;
+	border-bottom: 1px solid #DDDBCE;
+}
+
+.catBar .catsA span {
+    color: #4a757f;
+    font-size: 13px;
+    line-height: 18px;
+    font-family: Arial, sans-serif;
+    margin-top: 10px;
 }
 
 .suggested-tags .category-suggested-tags {
@@ -4481,3 +4547,4 @@ textarea.tipped-input {
     width: 100%;
   }
 }
+

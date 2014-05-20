@@ -57,7 +57,6 @@ def ldap_authenticate_default(username, password):
     user_information = None
     user_info = {}#the return value
     try:
-        print askbot_settings.LDAP_URL
         ldap_session = ldap.initialize(askbot_settings.LDAP_URL)
 
         #set protocol version
@@ -84,34 +83,21 @@ def ldap_authenticate_default(username, password):
         master_username = getattr(django_settings, 'LDAP_LOGIN_DN', None)
         master_password = getattr(django_settings, 'LDAP_PASSWORD', None)
 
-#         print 'master_username', master_username
-#         print 'master_password', master_password
-
         login_name_field = askbot_settings.LDAP_LOGIN_NAME_FIELD
         base_dn = askbot_settings.LDAP_BASE_DN
         login_template = login_name_field + '=%s,' + base_dn
         encoding = askbot_settings.LDAP_ENCODING
-        
-#         print 'login_name_field', login_name_field
-#         print 'base_dn', base_dn
-#         print 'login_template', login_template
-#         print 'encoding', encoding
         
         if master_username and master_password:
             ldap_session.simple_bind_s(
                 master_username.encode(encoding),
                 master_password.encode(encoding)
             )
-        
-#         print 'master_username', master_username
-#         print 'master_password', master_password  
 
         user_filter = askbot_settings.LDAP_USER_FILTER_TEMPLATE % (
                         askbot_settings.LDAP_LOGIN_NAME_FIELD,
                         username
                     )
-
-#         print 'user_filter', user_filter
         
         email_field = askbot_settings.LDAP_EMAIL_FIELD
         photo_field = "extensionAttribute1"
@@ -128,16 +114,10 @@ def ldap_authenticate_default(username, password):
             # by Jun
             manager_field
         ]
-        
-#         print 'email_field', email_field
 
         common_name_field = askbot_settings.LDAP_COMMON_NAME_FIELD.strip()
         given_name_field = askbot_settings.LDAP_GIVEN_NAME_FIELD.strip()
         surname_field = askbot_settings.LDAP_SURNAME_FIELD.strip()
-        
-#         print 'common_name_field', common_name_field
-#         print 'given_name_field', given_name_field
-#         print 'surname_field', surname_field
 
         if given_name_field and surname_field:
             get_attrs.append(given_name_field.encode(encoding))
@@ -153,8 +133,6 @@ def ldap_authenticate_default(username, password):
             get_attrs
         )
         
-#         print 'user_search_result', user_search_result
-        
         if user_search_result: # User found in LDAP Directory
             user_dn = user_search_result[0][0]
             user_information = user_search_result[0][1]
@@ -168,15 +146,12 @@ def ldap_authenticate_default(username, password):
                 manager = uf.get(manager_field, [''])[0]
                 print 'manager', manager
                 if manager == xiaopeng:
-#                     print 'ok, under xiao peng'
                     break
                 else:
                     search_result = ldap_session.search_s(manager.encode(encoding), ldap.SCOPE_SUBTREE, 'cn=*', [manager_field])
                     if search_result:
                         uf = search_result[0][1]
-#                         print 'user_info', uf
                     else:
-#                         print 'not under xiao peng'
                         user_info['success'] = False
                         return user_info
                 
@@ -207,15 +182,12 @@ def ldap_authenticate_default(username, password):
             user_info['success'] = False
 
     except ldap.INVALID_CREDENTIALS, e:
-        print 'error1'
         user_info['success'] = False
     except ldap.LDAPError, e:
-        print 'error2'
         LOG.error("LDAPError Exception")
         LOG.exception(e)
         user_info['success'] = False
     except Exception, e:
-        print 'error3'
         LOG.error("Unexpected Exception Occurred")
         LOG.exception(e)
         user_info['success'] = False
