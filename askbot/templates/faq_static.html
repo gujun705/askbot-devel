@@ -12,6 +12,21 @@
 <p> {% trans %}The site use LDAP authentication, so it will not store the password. However, it's http instead of https. So the data is transferred in plain-text, which might be a potential risk. {% endtrans %}</p>
 <p> {% trans %}Please refer to <a href='/question/109/is-logging-onto-askbot-with-corp-credential-safe/'>this thread</a>{% endtrans %}</p>
 
+<h2>{% trans %}Why I always be prompted to enter credentials?{% endtrans %}</h2>
+<p>{% trans %}User avatar of Askbot is from <a href="home.microstrategy.com">home.microstrategy.com</a>. To access it, we need to enter our credentials.{% endtrans %}</p>
+<p>{% trans %}You can change your browser settings to enable auto login using Windows Authentication:{% endtrans %}</p>
+<ul>
+        <li>
+        {% trans %}For IE, please go to Tools > Internet Optations within the browser or Control Panel > Internet Options, then `Security' tab > Local intranet > Sites, add https://home.microstrategy.com and click OK.{% endtrans %}
+        </li>
+        <li>
+        {% trans %}For Chrome, please go to Control Panel > Internet Options, the others are the same as IE. {% endtrans %}
+        </li>
+        <li>
+        {% trans %}For Firefox, please input about:config in the address bar, search `network.automatic-ntlm-auth.trusted-uris', append `https://home.microstrategy.com' to value.{% endtrans %}
+        </li>
+</ul>
+
 <h2>{% trans %}What's the database backup policy of this site?{% endtrans %}</h2>
 <p>{% trans %}We will backup the database structure and data everyday since the database is small. {% endtrans %}</p>
 <p>{% trans %}And we will retain the backups with following approach, {% endtrans %}</p>
