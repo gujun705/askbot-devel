@@ -893,12 +893,15 @@ def delete_post(request):
 
 # by Jun
 def __update_presentation(post, delete):
-    from askbot.models import is_presentation_thread
-    if is_presentation_thread(post.thread_id):
-    #if post.thread_id == 1: # hard code the thread_id here since it won't be changed
-        if post.is_answer():
+#     from askbot.models import is_presentation_thread
+#     if is_presentation_thread(post.thread_id):
+
+    from askbot.models import is_conference_category
+    if is_conference_category(post.thread.category_id):
+        if post.is_answer() or post.is_question():
             presentations = models.Presentation.objects.filter(answer=post)
-            if len(presentations) == 0:
+#             if len(presentations) == 0:
+            if presentations.count() == 0:
                 return
             else:
                 presentation = presentations[0]

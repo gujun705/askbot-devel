@@ -98,8 +98,8 @@ def replace_links_with_text(html):
 
 def sanitize_html(html):
     """Sanitizes an HTML fragment."""
-    print 'start to test'
-    print html
+    #print 'start to test'
+    #print html
     p = html5lib.HTMLParser(tokenizer=HTMLSanitizer,
                             tree=treebuilders.getTreeBuilder("dom"))
     dom_tree = p.parseFragment(html)

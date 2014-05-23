@@ -6,18 +6,19 @@
 	{# use inline style since I do not want to pollute the overall style #}
     <table id="presentation_list" style="border: 1px solid silver; margin: 10px 5px; width: 100%">
 		<thead style="background-color: rgba(226, 226, 226, 0.80)">
-			<th style="border-right: 1px solid silver; width: 45%">Subject</th>
-			<th style="border-right: 1px solid silver; width: 20%">Presenter</th>
-			<th style="border-right: 1px solid silver; width: 25%">Team</th>
+			<th style="border-right: 1px solid silver; width: 40%">Subject</th>
+			<th style="border-right: 1px solid silver; width: 18%">Presenter</th>
+			<th style="border-right: 1px solid silver; width: 20%">Team</th>
 			<th>Publish Date</th>
 		</thead>
 		<tbody>
         {% for present in presentations %}
 			<tr style="border-top: 1px solid silver">
-				<td style="padding: 0 5px; border-right: 1px solid silver; width: 45%"><a href="{{present.link}}">{{present.subject}}</a></td>
-				<td style="padding: 0 5px; border-right: 1px solid silver; width: 20%">{{present.presenter}}</td>
-				<td style="padding: 0 5px; border-right: 1px solid silver; width: 25%">{{present.team}}</td>
-				<td style="padding: 0 5px">{{present.create_at|date('Y-m-d')}}</td>
+				<td style="padding: 0 5px; border-right: 1px solid silver; width: 40%"><a href="{{present.link}}">{{present.subject}}</a></td>
+				<td style="padding: 0 5px; border-right: 1px solid silver; width: 18%">{{present.presenter}}</td>
+				<td style="padding: 0 5px; border-right: 1px solid silver; width: 20%">{{present.team}}</td>
+				{#<td style="padding: 0 5px">{{present.create_at|date('Y-m-d')}}</td>#}
+				<td style="padding: 0 5px">{{present.time_in_text}}</td>
 			</tr>
         {% endfor %}
 		</tbody>

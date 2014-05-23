@@ -144,7 +144,6 @@ def ldap_authenticate_default(username, password):
             
             while True:
                 manager = uf.get(manager_field, [''])[0]
-                print 'manager', manager
                 if manager == xiaopeng:
                     break
                 else:

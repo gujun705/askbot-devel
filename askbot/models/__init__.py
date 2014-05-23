@@ -3595,10 +3595,15 @@ def moderate_group_joining(sender, instance=None, created=False, **kwargs):
             )
 
 def is_presentation_thread(thread_id):
-    t = Thread.objects.all().filter(title="Presentation tracking  for within-team knowledge sharing")
-    if len(t) > 0:
+    t = Thread.objects.filter(title="Presentation tracking  for within-team knowledge sharing")
+    if t.count() > 0:
         if t[0].id == thread_id:
             return True
+    return False
+
+def is_conference_category(category_id):
+    if category_id == 23:
+        return True
     return False
 
 #signal for User model save changes

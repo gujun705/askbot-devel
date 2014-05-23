@@ -247,6 +247,9 @@ def ask(request):#view used to ask a new question
                         timestamp = timestamp,
                         group_id = group_id
                     )
+                    
+                    __save_presentation(question, None, text, user)
+                    
                     return HttpResponseRedirect(question.get_absolute_url())
                 except exceptions.PermissionDenied, e:
                     request.user.message_set.create(message = unicode(e))
@@ -426,10 +429,13 @@ def edit_question(request, id):
                         category = form.cleaned_data['category']
                         user = form.get_post_user(request.user)
                         logging.info(category)
+                        
+                        text = form.cleaned_data['text']
+                        
                         user.edit_question(
                             question = question,
                             title = form.cleaned_data['title'],
-                            body_text = form.cleaned_data['text'],
+                            body_text = text, #form.cleaned_data['text'],
                             revision_comment = form.cleaned_data['summary'],
                             tags = form.cleaned_data['tags'],
                             category = category,
@@ -437,6 +443,10 @@ def edit_question(request, id):
                             edit_anonymously = is_anon_edit,
                             is_private = post_privately
                         )
+                        
+                        # by Jun
+                        __save_presentation(question, None, text, user)
+                        
                     return HttpResponseRedirect(question.get_absolute_url())
         else:
             #request type was "GET"
@@ -602,54 +612,105 @@ def answer(request, id):#process a new answer
 
 # update presentation table, by Jun
 def __save_presentation(question, answer, text, user):
-    # we only process thread whose id equals 1
-    # we hard coded here since it will not be changed
-    from askbot.models import is_presentation_thread
-    if is_presentation_thread(answer.thread_id):
-    #if answer.thread_id == 1:
+    '''
+        # 1. Use pattern to test whether the text obey the presentation rule
+        # 2. Parse the text to generate presentation object
+    '''
+    
+    #from askbot.models import is_presentation_thread
+    
+    from askbot.models import is_conference_category
+    
+    post = None
+    if answer is None:
+        post = question
+    else:
+        post = answer
+        
+    if post is None or post.thread is None:
+        return
+     
+    category_id = post.thread.category_id
+    
+    if is_conference_category(category_id):
+    
+        # As I discussed with Chase, the possibility that a post contain subject, presenter, team , date|time
+        # but it does not aim to post a presentation is low.
+        # We can just ignore this case.
+      
         # (\*\*)? when bold
-        #m = re.search('Subject(\*\*)?:?(?P<subject>.*)', text, re.I)
         m = re.search('Subject(\*\*\s*:|:\s*\*\*|:|\*\*)?(?P<subject>.*)', text, re.I)
+        if m is None:
+            return
         subject = m.group('subject')
         if subject is None:
             return
-        #m = re.search('Presenter(\*\*)?:?(?P<presenter>.*)', text, re.I)
         m = re.search('Presenter(\*\*\s*:|:\s*\*\*|:|\*\*)?(?P<presenter>.*)', text, re.I)
+        if m is None:
+            return
         presenter = m.group('presenter')
         if presenter is None:
             presenter = ""
         #m = re.search('Team(\*\*)?:?(?P<team>.*)', text, re.I)
         m = re.search('Team(\*\*\s*:|:\s*\*\*|:|\*\*)?(?P<team>.*)', text, re.I)
+        if m is None:
+            return
         team = m.group('team')
         if team is None:
             team = ""
+            
+        m = re.search('(Time|Date)(\*\*\s*:|:\s*\*\*|:|\*\*)?(?P<time>.*)', text, re.I)
+        if m is None:
+            return
+        time_in_text = m.group('time')
+        if time_in_text is None:
+            time_in_text = ""
+            
         subject = subject.strip()
         presenter = presenter.strip()
         team = team.strip()
-        presentations = models.Presentation.objects.filter(answer=answer)
+        time_in_text = time_in_text.strip()
+        
+#         print 'subject is: ', subject
+#         print 'presenter is: ', presenter
+#         print 'team is: ', team
+#         print 'time_in_text is: ', time_in_text
+        
+        presentations = models.Presentation.objects.filter(answer=post)
         presentation = None
-        if len(presentations) == 0:
+        if presentations.count() == 0:
             presentation = models.Presentation()
         else:
             presentation = presentations[0]
         presentation.subject=subject
         presentation.presenter=presenter
         presentation.team=team
+        presentation.time_in_text=time_in_text
+        
         if not question is None:
-            presentation.link=answer.get_absolute_url(question_post=question)
-        presentation.answer=answer
+            if not answer is None:
+                # post answer
+                presentation.link=answer.get_absolute_url(question_post=question)
+            else:
+                # post question
+                presentation.link=question.get_absolute_url()
+        
+        # question is None means we are editing answer, then we do nothing to link field
+        
+        presentation.answer = post
+
         # FIXME: parse text to get time
         #presentation.present_at=str(datetime.datetime.now())
         #presentation.create_at=str(datetime.datetime.now())
         presentation.update_at=str(datetime.datetime.now())
         
-        __notify_if_duplicate_subject(subject, user, presentation.link)
-        
         presentation.save()
+        
+        __notify_if_duplicate_subject(subject, user, presentation.link)
 
 def __notify_if_duplicate_subject(subject, user, link):
     presentations = models.Presentation.objects.filter(subject=subject, deleted=False)
-    if len(presentations) > 0:
+    if presentations.count() > 1:
         from askbot import mail, const
         mail.send_mail(
             subject_line = "Duplicate presentation subject",
